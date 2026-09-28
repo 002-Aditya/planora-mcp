@@ -1,0 +1,42 @@
+{
+  "name": "@planora/mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Planora — manage your notes and files via AI",
+  "type": "module",
+  "license": "MIT",
+  "author": "Planora",
+  "homepage": "https://planora-frontend.pages.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/planora/planora-mcp.git"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "planora",
+    "notes",
+    "ai",
+    "claude",
+    "cursor"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "bin": {
+    "planora-login": "./bin/login.js",
+    "planora-mcp": "./bin/mcp.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "dotenv": "^16.4.5"
+  }
+}
