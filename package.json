@@ -1,5 +1,5 @@
 {
-  "name": "@planora/mcp",
+  "name": "planora-mcp",
   "version": "1.0.0",
   "description": "MCP server for Planora — manage your notes and files via AI",
   "type": "module",
@@ -32,10 +32,7 @@
     "README.md",
     "LICENSE"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
+"dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "dotenv": "^16.4.5"
   }

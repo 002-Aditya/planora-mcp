@@ -1,4 +1,4 @@
-# @planora/mcp
+# planora-mcp
 
 The official Model Context Protocol (MCP) server for [Planora](https://planora-frontend.pages.dev/) — connect your AI assistant (Claude Desktop, Cursor, Windsurf, etc.) directly to your notes and files.
 
@@ -48,13 +48,13 @@ Once installed, your AI can read, create, edit, delete, and export your Planora 
 Install the package globally so the CLI commands are available system-wide:
 
 ```bash
-npm install -g @planora/mcp
+npm install -g planora-mcp
 ```
 
 Or use `npx` without installing (you will need to run login separately):
 
 ```bash
-npx @planora/mcp
+npx planora-mcp
 ```
 
 ---
@@ -159,7 +159,7 @@ If you used `npx` instead of a global install, use:
   "mcpServers": {
     "planora": {
       "command": "npx",
-      "args": ["@planora/mcp"]
+      "args": ["planora-mcp"]
     }
   }
 }
@@ -505,7 +505,7 @@ You can log in from multiple devices simultaneously — each device gets its own
 **Setup on a second device:**
 
 ```bash
-npm install -g @planora/mcp
+npm install -g planora-mcp
 planora-login
 ```
 
@@ -602,7 +602,7 @@ Settings → Security → Two-Factor Authentication → Enable
 **The MCP server doesn't appear in Claude Desktop / Cursor**
 
 - Confirm `planora-mcp` is in your PATH: `which planora-mcp`
-- If installed globally via npm, check: `npm list -g @planora/mcp`
+- If installed globally via npm, check: `npm list -g planora-mcp`
 - Restart your AI client after editing the config file
 - Check the client's MCP logs for startup errors
 
