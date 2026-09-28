@@ -39,7 +39,7 @@ async function login() {
   writeConfig({ token: data.token, deviceName, expiresAt });
 
   console.log(`\nConnected as ${email.trim()} on "${deviceName}".`);
-  console.log(`Token valid for ${SESSION_EXPIRY_DAYS} days. Run 'planora-login --refresh' before it expires.`);
+  console.log(`Token valid for ${SESSION_EXPIRY_DAYS} days. Run 'planora --refresh' before it expires.`);
 }
 
 async function refresh() {
