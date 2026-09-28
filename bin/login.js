@@ -22,7 +22,7 @@ async function login() {
   const deviceName = deviceInput.trim() || defaultDevice;
   rl.close();
 
-  const res = await fetch(`${API_BASE_URL}/api/auth/login-mcp`, {
+  const res = await fetch(`${API_BASE_URL}/api/mcp/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -51,7 +51,7 @@ async function refresh() {
 
   console.log('Refreshing session token...');
 
-  const res = await fetch(`${API_BASE_URL}/api/auth/refresh-mcp`, {
+  const res = await fetch(`${API_BASE_URL}/api/mcp/auth/refresh`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ async function logout() {
 
   try {
     // Best-effort server-side revocation — clear locally regardless of outcome
-    await fetch(`${API_BASE_URL}/api/auth/mcp-session/current`, {
+    await fetch(`${API_BASE_URL}/api/mcp/auth/session/current`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` },
     });
