@@ -10,6 +10,21 @@ const isRefresh = args.includes('--refresh');
 const isLogout = args.includes('--logout');
 
 async function login() {
+  // If already logged in, show current session info and exit
+  const config = readConfig();
+  if (config?.PLANORA_SESSION_TOKEN) {
+    const expiresAt = config.PLANORA_TOKEN_EXPIRES_AT;
+    const daysLeft = expiresAt
+      ? Math.ceil((new Date(expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+      : null;
+    const deviceName = config.PLANORA_DEVICE_NAME ?? 'Unknown Device';
+    if (daysLeft !== null && daysLeft > 0) {
+      console.log(`Already logged in as "${deviceName}" (expires in ${daysLeft} day${daysLeft === 1 ? '' : 's'}).`);
+      console.log(`Run 'planora --refresh' to renew or 'planora --logout' to sign out.`);
+      return;
+    }
+  }
+
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   const ask = (prompt) => new Promise((resolve) => rl.question(prompt, resolve));
 
@@ -45,7 +60,7 @@ async function login() {
 async function refresh() {
   const token = getToken();
   if (!token) {
-    console.error('No active session. Run planora-login to authenticate.');
+    console.error('No active session. Run planora to authenticate.');
     process.exit(1);
   }
 
@@ -62,7 +77,7 @@ async function refresh() {
   const data = await res.json();
   if (!res.ok) {
     if (res.status === 401) {
-      console.error('Session expired or invalid. Run planora-login to re-authenticate.');
+      console.error('Session expired or invalid. Run planora to re-authenticate.');
       process.exit(1);
     }
     throw new Error(data.error ?? 'Refresh failed');
