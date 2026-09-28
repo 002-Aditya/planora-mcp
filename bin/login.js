@@ -9,10 +9,10 @@ const args = process.argv.slice(2);
 const isRefresh = args.includes('--refresh');
 const isLogout = args.includes('--logout');
 
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-const ask = (prompt) => new Promise((resolve) => rl.question(prompt, resolve));
-
 async function login() {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  const ask = (prompt) => new Promise((resolve) => rl.question(prompt, resolve));
+
   console.log('Connecting to Planora...\n');
 
   const email = await ask('Email: ');
@@ -106,8 +106,8 @@ try {
   } else {
     await login();
   }
+  process.exit(0);
 } catch (err) {
-  if (rl.terminal !== undefined) rl.close();
   console.error(`\nError: ${err.message}`);
   process.exit(1);
 }

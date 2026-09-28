@@ -58,7 +58,7 @@ npm install -g planora-mcp
 Verify the installation:
 
 ```bash
-planora-login --help
+planora --help
 ```
 
 ### Updating
@@ -95,7 +95,7 @@ Your session token is stored locally at `~/.planora/mcp.env` with `600` permissi
 Run this once to connect a device to your Planora account:
 
 ```bash
-planora-login
+planora
 ```
 
 You will be prompted for:
@@ -116,7 +116,7 @@ On success:
 
 ```
 Connected as you@example.com on "MacBook Work".
-Token valid for 30 days. Run 'planora-login --refresh' before it expires.
+Token valid for 30 days. Run 'planora --refresh' before it expires.
 ```
 
 Your session token is saved to `~/.planora/mcp.env`. The MCP server reads it automatically on every request.
@@ -128,7 +128,7 @@ Your session token is saved to `~/.planora/mcp.env`. The MCP server reads it aut
 Sessions expire after **30 days**. Refresh before expiry to avoid interruption:
 
 ```bash
-planora-login --refresh
+planora --refresh
 ```
 
 This rotates your token server-side (old token is immediately invalidated) and saves a new 30-day token. No TOTP code needed — your existing valid session authorizes the refresh.
@@ -147,7 +147,7 @@ Session refreshed. New token valid for 30 days.
 To disconnect this device from your Planora account:
 
 ```bash
-planora-login --logout
+planora --logout
 ```
 
 This revokes your session on the server and deletes `~/.planora/mcp.env` locally.
@@ -531,7 +531,7 @@ You can log in from multiple devices simultaneously — each device gets its own
 
 ```bash
 npm install -g planora-mcp
-planora-login
+planora
 ```
 
 ```
@@ -553,19 +553,19 @@ Both devices share the same Planora data. Tokens are independent — refreshing 
 ## Session Lifecycle
 
 ```
-planora-login           → 30-day token saved to ~/.planora/mcp.env
+planora           → 30-day token saved to ~/.planora/mcp.env
                            (mode 0600 — owner read/write only)
 
 Day 27                  → MCP server warns on first tool call:
-                           "Your session expires in 3 days. Run planora-login --refresh"
+                           "Your session expires in 3 days. Run planora --refresh"
 
-planora-login --refresh → Old token invalidated, new 30-day token saved
+planora --refresh → Old token invalidated, new 30-day token saved
                            (no TOTP code needed)
 
 Day 30 (expired)        → All tool calls return:
-                           "Your session token has expired. Run 'planora-login --refresh'"
+                           "Your session token has expired. Run 'planora --refresh'"
 
-planora-login --logout  → Session revoked server-side, ~/.planora/mcp.env deleted
+planora --logout  → Session revoked server-side, ~/.planora/mcp.env deleted
 ```
 
 ---
@@ -587,24 +587,24 @@ planora-login --logout  → Session revoked server-side, ~/.planora/mcp.env dele
 
 ## Troubleshooting
 
-**`Error: No session found. Run 'planora-login' to authenticate.`**
+**`Error: No session found. Run 'planora' to authenticate.`**
 
 You haven't logged in yet, or `~/.planora/mcp.env` was deleted. Run:
 ```bash
-planora-login
+planora
 ```
 
 ---
 
-**`Your session token has expired. Run 'planora-login --refresh' to renew.`**
+**`Your session token has expired. Run 'planora --refresh' to renew.`**
 
 Your 30-day token has expired. Run:
 ```bash
-planora-login --refresh
+planora --refresh
 ```
 If this also fails with a 401, the session was revoked remotely. Run a full login instead:
 ```bash
-planora-login
+planora
 ```
 
 ---

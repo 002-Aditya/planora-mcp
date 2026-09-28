@@ -23,7 +23,7 @@
     "node": ">=18.0.0"
   },
   "bin": {
-    "planora-login": "./bin/login.js",
+    "planora": "./bin/login.js",
     "planora-mcp": "./bin/mcp.js"
   },
   "files": [

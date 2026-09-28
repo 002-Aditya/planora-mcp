@@ -15,7 +15,7 @@ let startupWarning = null;
   if (!expiresAt) return;
   const daysLeft = Math.ceil((new Date(expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
   if (daysLeft > 0 && daysLeft <= TOKEN_WARNING_DAYS) {
-    startupWarning = `Warning: Your session expires in ${daysLeft} day${daysLeft === 1 ? '' : 's'}. Run 'planora-login --refresh' to renew.`;
+    startupWarning = `Warning: Your session expires in ${daysLeft} day${daysLeft === 1 ? '' : 's'}. Run 'planora --refresh' to renew.`;
   }
 })();
 
@@ -245,7 +245,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         content: [
           {
             type: 'text',
-            text: "Your session token has expired. Run 'planora-login --refresh' to renew.",
+            text: "Your session token has expired. Run 'planora --refresh' to renew.",
           },
         ],
         isError: true,
