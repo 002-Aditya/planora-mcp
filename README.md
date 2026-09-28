@@ -48,13 +48,38 @@ Once installed, your AI can read, create, edit, delete, and export your Planora 
 Install the package globally so the CLI commands are available system-wide:
 
 ```bash
+# macOS / Linux (may require sudo)
+sudo npm install -g planora-mcp
+
+# Windows (run as Administrator)
 npm install -g planora-mcp
 ```
 
-Or use `npx` without installing (you will need to run login separately):
+Verify the installation:
 
 ```bash
-npx planora-mcp
+planora-login --help
+```
+
+### Updating
+
+To update to the latest version:
+
+```bash
+sudo npm uninstall -g planora-mcp
+sudo npm install -g planora-mcp@latest
+```
+
+### Uninstalling
+
+```bash
+sudo npm uninstall -g planora-mcp
+```
+
+This removes the CLI commands. Your local session file at `~/.planora/mcp.env` is not deleted — remove it manually if needed:
+
+```bash
+rm ~/.planora/mcp.env
 ```
 
 ---
