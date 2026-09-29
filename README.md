@@ -176,15 +176,13 @@ planora
 
 **Step 2 — Register the MCP server:**
 
-```bash
-claude mcp add planora-mcp -- planora-mcp
-```
-
-If `planora-mcp` is not in your PATH (e.g. you haven't installed globally), use the full path instead:
+No global install needed — use `npx` and register with `user` scope so it's available in every Claude Code session:
 
 ```bash
-claude mcp add planora-mcp -- node /absolute/path/to/planora-mcp/bin/mcp.js
+claude mcp add planora-mcp --scope user -- npx planora-mcp
 ```
+
+> **Note:** Do not use `--scope local` or omit `--scope` — that pins the server to a single project directory only.
 
 **Step 3 — Reload:** Restart Claude Code or run `/mcp` in your current session to reload servers.
 
@@ -663,9 +661,14 @@ Settings → Security → Two-Factor Authentication → Enable
 
 **The MCP server doesn't appear in Claude Code**
 
-Installing via npm does not automatically register the server with Claude Code — you must add it explicitly:
+Installing via npm does not automatically register the server — you must add it explicitly with `user` scope:
 ```bash
-claude mcp add planora-mcp -- planora-mcp
+claude mcp add planora-mcp --scope user -- npx planora-mcp
+```
+If you previously added it without `--scope user`, it was saved as a local (project-only) config. Remove it and re-add:
+```bash
+claude mcp remove planora-mcp
+claude mcp add planora-mcp --scope user -- npx planora-mcp
 ```
 Then restart Claude Code or run `/mcp` to reload. Confirm with `claude mcp list`.
 
