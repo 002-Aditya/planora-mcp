@@ -15,6 +15,7 @@ Once installed, your AI can read, create, edit, delete, and export your Planora 
   - [Refresh Token](#refresh-token)
   - [Logout](#logout)
 - [Connecting to an AI Client](#connecting-to-an-ai-client)
+  - [Claude Code (CLI)](#claude-code-cli)
   - [Claude Desktop](#claude-desktop)
   - [Cursor](#cursor)
   - [Windsurf](#windsurf)
@@ -162,6 +163,42 @@ Logged out. Local session cleared.
 ## Connecting to an AI Client
 
 After logging in, register the MCP server with your AI client. The server communicates over **stdio** (standard input/output) — it runs as a subprocess spawned by the client.
+
+### Claude Code (CLI)
+
+Claude Code is Anthropic's terminal-based AI assistant. MCP servers are registered via the `claude mcp add` command.
+
+**Step 1 — Authenticate (one-time):**
+
+```bash
+planora
+```
+
+**Step 2 — Register the MCP server:**
+
+```bash
+claude mcp add planora-mcp -- planora-mcp
+```
+
+If `planora-mcp` is not in your PATH (e.g. you haven't installed globally), use the full path instead:
+
+```bash
+claude mcp add planora-mcp -- node /absolute/path/to/planora-mcp/bin/mcp.js
+```
+
+**Step 3 — Reload:** Restart Claude Code or run `/mcp` in your current session to reload servers.
+
+Verify it registered:
+
+```bash
+claude mcp list
+```
+
+You should see `planora-mcp` in the output. All 8 tools are then available in any Claude Code conversation.
+
+> **Tip:** To remove the server later: `claude mcp remove planora-mcp`
+
+---
 
 ### Claude Desktop
 
@@ -621,6 +658,16 @@ Settings → Security → Two-Factor Authentication → Enable
 - Make sure your device clock is accurate (TOTP codes are time-sensitive)
 - The code changes every 30 seconds — try again with the freshly generated code
 - Ensure you're using the correct Planora entry in Google Authenticator
+
+---
+
+**The MCP server doesn't appear in Claude Code**
+
+Installing via npm does not automatically register the server with Claude Code — you must add it explicitly:
+```bash
+claude mcp add planora-mcp -- planora-mcp
+```
+Then restart Claude Code or run `/mcp` to reload. Confirm with `claude mcp list`.
 
 ---
 
