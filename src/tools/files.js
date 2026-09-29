@@ -28,3 +28,22 @@ export async function edit_file({ fileId, mode, newContent, searchContent, repla
 export async function delete_file({ fileId }) {
   return apiRequest(`/api/mcp/files/${fileId}`, { method: 'DELETE' });
 }
+
+export async function rename_file({ fileId, name }) {
+  return apiRequest(`/api/mcp/files/${fileId}/rename`, {
+    method: 'PATCH',
+    body: JSON.stringify({ name }),
+  });
+}
+
+export async function get_recent_documents() {
+  return apiRequest('/api/mcp/files/recent');
+}
+
+export async function get_pinned_documents() {
+  return apiRequest('/api/mcp/files/pinned');
+}
+
+export async function get_file_link({ fileId }) {
+  return apiRequest(`/api/mcp/files/${fileId}/link`);
+}

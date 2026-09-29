@@ -128,6 +128,39 @@ const TOOLS = [
     },
   },
   {
+    name: 'rename_file',
+    description: 'Renames a file or folder.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        fileId: { type: 'string', description: 'The unique ID of the file or folder to rename' },
+        name:   { type: 'string', description: 'The new name (include extension for files, e.g. notes.md)' },
+      },
+      required: ['fileId', 'name'],
+    },
+  },
+  {
+    name: 'get_file_link',
+    description: 'Returns a direct link to open a file or folder in the Planora app.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        fileId: { type: 'string', description: 'The unique ID of the file or folder' },
+      },
+      required: ['fileId'],
+    },
+  },
+  {
+    name: 'get_recent_documents',
+    description: 'Returns the 10 most recently modified documents with their names, types, and last-modified dates.',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'get_pinned_documents',
+    description: 'Returns all files and folders the user has pinned.',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
     name: 'generate_pdf_download_link',
     description: 'Exports a file as a PDF and returns a secure download URL valid for 1 hour.',
     inputSchema: {
@@ -210,6 +243,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         await fileTools.delete_file(args);
         return { content: [{ type: 'text', text: prefix + 'File permanently deleted.' }] };
 
+      case 'rename_file':
+        result = await fileTools.rename_file(args);
+        return { content: [{ type: 'text', text: prefix + `Renamed to '${result.name}' (id: ${result.id})` }] };
+
+      case 'get_file_link':
+        result = await fileTools.get_file_link(args);
+        return { content: [{ type: 'text', text: prefix + `Link for '${result.name}':\n${result.url}` }] };
+
+      case 'get_recent_documents':
+        result = await fileTools.get_recent_documents();
+        return { content: [{ type: 'text', text: prefix + formatRecentDocs(result) }] };
+
+      case 'get_pinned_documents':
+        result = await fileTools.get_pinned_documents();
+        return { content: [{ type: 'text', text: prefix + formatPinnedDocs(result) }] };
+
       case 'generate_pdf_download_link':
         result = await exportTools.generate_pdf_download_link(args);
         return {
@@ -281,6 +330,26 @@ function formatReadResult(result) {
     );
   }
   return result.content ?? '(empty file)';
+}
+
+function formatRecentDocs(items) {
+  if (!items?.length) return 'No recent documents found.';
+  const lines = items.map((f) => {
+    const date = new Date(f.updatedAt).toLocaleDateString();
+    const loc = f.folder ? ` — in ${f.folder}` : '';
+    return `- ${f.name}${loc}  (id: ${f.id})  · ${date}`;
+  });
+  return `Recent documents (${items.length}):\n\n${lines.join('\n')}`;
+}
+
+function formatPinnedDocs(items) {
+  if (!items?.length) return 'No pinned items found.';
+  const lines = items.map((f) => {
+    const tag = f.type === 'folder' ? '[folder]' : '[file]';
+    const loc = f.folder ? ` — in ${f.folder}` : '';
+    return `${tag} ${f.name}${loc}  (id: ${f.id})`;
+  });
+  return `Pinned items (${items.length}):\n\n${lines.join('\n')}`;
 }
 
 function formatSessions(sessions) {

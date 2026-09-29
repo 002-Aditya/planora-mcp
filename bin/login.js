@@ -48,7 +48,14 @@ async function login() {
   });
 
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error ?? 'Authentication failed');
+  if (!res.ok) {
+    if (data.code === 'ACCOUNT_NOT_FOUND') {
+      console.error(`\nNo Planora account found for ${email.trim()}.`);
+      console.error(`Sign up first at: ${data.signupUrl ?? 'https://planora-frontend.pages.dev'}`);
+      process.exit(1);
+    }
+    throw new Error(data.error ?? 'Authentication failed');
+  }
 
   const expiresAt = new Date(Date.now() + SESSION_EXPIRY_DAYS * 24 * 60 * 60 * 1000).toISOString();
   writeConfig({ token: data.token, deviceName, expiresAt });
