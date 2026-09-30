@@ -119,7 +119,16 @@ async function logout() {
 
 // ── Connect ───────────────────────────────────────────────────────────────────
 
-const MCP_ENTRY = { command: 'npx', args: ['-y', 'planora-mcp'] };
+function resolveMcpCommand() {
+  try {
+    const bin = execSync(
+      process.platform === 'win32' ? 'where planora-mcp' : 'which planora-mcp',
+      { stdio: ['pipe', 'pipe', 'pipe'] }
+    ).toString().trim().split('\n')[0].trim();
+    if (bin) return { command: bin, args: [] };
+  } catch { /* not installed globally */ }
+  return { command: 'npx', args: ['--prefer-offline', 'planora-mcp'] };
+}
 
 /**
  * Reads a JSON config file (returns {} if missing), merges the planora MCP entry
@@ -134,24 +143,28 @@ function upsertJsonConfig(filePath, buildConfig) {
     try { existing = JSON.parse(fs.readFileSync(filePath, 'utf8')); } catch { /* corrupt file — start fresh */ }
   }
 
+  const entry = resolveMcpCommand();
+  const existing_entry = existing?.mcpServers?.planora ?? existing?.mcpServers?.['planora-mcp'];
   const alreadySet =
-    existing?.mcpServers?.planora?.command === MCP_ENTRY.command &&
-    JSON.stringify(existing?.mcpServers?.planora?.args) === JSON.stringify(MCP_ENTRY.args);
+    existing_entry?.command === entry.command &&
+    JSON.stringify(existing_entry?.args) === JSON.stringify(entry.args);
 
   if (alreadySet) {
     console.log('Planora is already connected to this client.');
     return;
   }
 
-  const updated = buildConfig(existing);
+  const updated = buildConfig(existing, entry);
   fs.writeFileSync(filePath, JSON.stringify(updated, null, 2) + '\n');
   console.log(`Config updated: ${filePath}`);
 }
 
 function connectClaudeCLI() {
   console.log('Connecting Planora to Claude Code...');
+  const entry = resolveMcpCommand();
+  const cmdArgs = [entry.command, ...entry.args].join(' ');
   try {
-    execSync('claude mcp add planora-mcp --scope user -- npx -y planora-mcp', { stdio: 'inherit' });
+    execSync(`claude mcp add planora-mcp --scope user -- ${cmdArgs}`, { stdio: 'inherit' });
     console.log('\nDone. Restart Claude Code or run /mcp to reload.');
   } catch {
     console.error('\nFailed. Make sure the Claude Code CLI is installed: https://claude.ai/code');
@@ -166,9 +179,9 @@ function connectClaudeDesktop() {
       ? path.join(process.env.APPDATA, 'Claude', 'claude_desktop_config.json')
       : path.join(os.homedir(), 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json');
 
-  upsertJsonConfig(configPath, (existing) => ({
+  upsertJsonConfig(configPath, (existing, entry) => ({
     ...existing,
-    mcpServers: { ...(existing.mcpServers ?? {}), planora: MCP_ENTRY },
+    mcpServers: { ...(existing.mcpServers ?? {}), planora: entry },
   }));
   console.log('Restart Claude Desktop to apply.');
 }
@@ -176,9 +189,9 @@ function connectClaudeDesktop() {
 function connectCursor() {
   console.log('Connecting Planora to Cursor...');
   const configPath = path.join(os.homedir(), '.cursor', 'mcp.json');
-  upsertJsonConfig(configPath, (existing) => ({
+  upsertJsonConfig(configPath, (existing, entry) => ({
     ...existing,
-    mcpServers: { ...(existing.mcpServers ?? {}), planora: MCP_ENTRY },
+    mcpServers: { ...(existing.mcpServers ?? {}), planora: entry },
   }));
   console.log('Restart Cursor to apply.');
 }
@@ -186,9 +199,9 @@ function connectCursor() {
 function connectWindsurf() {
   console.log('Connecting Planora to Windsurf...');
   const configPath = path.join(os.homedir(), '.codeium', 'windsurf', 'mcp_config.json');
-  upsertJsonConfig(configPath, (existing) => ({
+  upsertJsonConfig(configPath, (existing, entry) => ({
     ...existing,
-    mcpServers: { ...(existing.mcpServers ?? {}), planora: MCP_ENTRY },
+    mcpServers: { ...(existing.mcpServers ?? {}), planora: entry },
   }));
   console.log('Restart Windsurf to apply.');
 }
@@ -196,9 +209,9 @@ function connectWindsurf() {
 function connectGemini() {
   console.log('Connecting Planora to Gemini CLI...');
   const configPath = path.join(os.homedir(), '.gemini', 'settings.json');
-  upsertJsonConfig(configPath, (existing) => ({
+  upsertJsonConfig(configPath, (existing, entry) => ({
     ...existing,
-    mcpServers: { ...(existing.mcpServers ?? {}), planora: MCP_ENTRY },
+    mcpServers: { ...(existing.mcpServers ?? {}), planora: entry },
   }));
   console.log('Restart Gemini CLI to apply.');
 }

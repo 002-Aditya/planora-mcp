@@ -249,7 +249,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_file_link':
         result = await fileTools.get_file_link(args);
-        return { content: [{ type: 'text', text: prefix + `Link for '${result.name}':\n${result.url}` }] };
+        return {
+          content: [
+            {
+              type: 'text',
+              text: prefix + (result.url
+                ? `Link for '${result.name}':\n${result.url}`
+                : `No direct link available for '${result.name}'. Use read_file to access its content.`),
+            },
+          ],
+        };
 
       case 'get_recent_documents':
         result = await fileTools.get_recent_documents();
