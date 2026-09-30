@@ -175,6 +175,16 @@ const TOOLS = [
     },
   },
   {
+    name: 'get_shared_with_me',
+    description: 'Returns all files and folders that have been shared with you, including the owner name and your permission level.',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'get_shared_by_me',
+    description: 'Returns all files and folders you have shared with others, including each recipient\'s name and their permission level.',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
     name: 'get_active_sessions',
     description:
       'Lists all active login sessions across devices, including device name, last used time, and expiry date.',
@@ -279,6 +289,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
 
+      case 'get_shared_with_me':
+        result = await fileTools.get_shared_with_me();
+        return { content: [{ type: 'text', text: prefix + formatSharedWithMe(result) }] };
+
+      case 'get_shared_by_me':
+        result = await fileTools.get_shared_by_me();
+        return { content: [{ type: 'text', text: prefix + formatSharedByMe(result) }] };
+
       case 'get_active_sessions':
         result = await sessionTools.get_active_sessions();
         return { content: [{ type: 'text', text: prefix + formatSessions(result) }] };
@@ -359,6 +377,38 @@ function formatPinnedDocs(items) {
     return `${tag} ${f.name}${loc}  (id: ${f.id})`;
   });
   return `Pinned items (${items.length}):\n\n${lines.join('\n')}`;
+}
+
+function formatSharedWithMe(items) {
+  if (!items?.length) return 'No items have been shared with you.';
+  const lines = items.map((s) => {
+    const tag = s.item_type === 'folder' ? '[folder]' : '[file]';
+    const perms = [
+      s.can_edit ? 'edit' : 'view',
+      s.can_download ? 'download' : null,
+      s.can_reshare ? 'reshare' : null,
+    ].filter(Boolean).join(', ');
+    const via = s.group_name ? ` via group "${s.group_name}"` : '';
+    return `${tag} ${s.item_name}  (id: ${s.file_id || s.folder_id})\n  Shared by: ${s.owner_name} <${s.owner_email}>${via}  ·  Permissions: ${perms}`;
+  });
+  return `Items shared with you (${items.length}):\n\n${lines.join('\n\n')}`;
+}
+
+function formatSharedByMe(items) {
+  if (!items?.length) return 'You have not shared any items.';
+  const lines = items.map((s) => {
+    const tag = s.item_type === 'folder' ? '[folder]' : '[file]';
+    const perms = [
+      s.can_edit ? 'edit' : 'view',
+      s.can_download ? 'download' : null,
+      s.can_reshare ? 'reshare' : null,
+    ].filter(Boolean).join(', ');
+    const recipient = s.group_name
+      ? `group "${s.group_name}"`
+      : `${s.shared_with_name || ''} <${s.shared_with_email}>`.trim();
+    return `${tag} ${s.item_name}  (id: ${s.file_id || s.folder_id})\n  Shared with: ${recipient}  ·  Permissions: ${perms}`;
+  });
+  return `Items you have shared (${items.length}):\n\n${lines.join('\n\n')}`;
 }
 
 function formatSessions(sessions) {

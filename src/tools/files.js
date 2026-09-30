@@ -47,3 +47,11 @@ export async function get_pinned_documents() {
 export async function get_file_link({ fileId }) {
   return apiRequest(`/api/mcp/files/${fileId}/link`);
 }
+
+export async function get_shared_with_me() {
+  return apiRequest('/api/mcp/shares/shared-with-me');
+}
+
+export async function get_shared_by_me() {
+  return apiRequest('/api/mcp/shares/shared-by-me');
+}
